@@ -1,0 +1,29 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init_db.py:/docker-entrypoint-initdb.d/init_db.py
+      - ./NFLstats.csv:/docker-entrypoint-initdb.d/NFLstats.csv
+
+  flask_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+
+  postgre_vis:
+    build:
+      context: .
+      dockerfile: Dockerfile_vis
+    depends_on:
+      - db
